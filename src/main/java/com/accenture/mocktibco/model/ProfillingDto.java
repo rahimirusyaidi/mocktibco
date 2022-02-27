@@ -8,6 +8,8 @@ public class ProfillingDto {
 
     @JsonProperty("name")
     private String name;
+    @JsonProperty("idValue")
+    private String idValue;
     @JsonProperty("accountNo")
     private String accountNo;
     @JsonProperty("billingAccount")

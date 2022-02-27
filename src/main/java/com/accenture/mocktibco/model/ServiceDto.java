@@ -14,7 +14,7 @@ public class ServiceDto {
     List<SubscribedService> subscribedServiceList;
 
     @Data
-    private class SubscribedService{
+    private static class SubscribedService{
 
         String planName;
 
