@@ -3,7 +3,7 @@ package com.accenture.mocktibco.controller;
 import com.accenture.mocktibco.model.BillingDto;
 import com.accenture.mocktibco.model.ProfillingDto;
 import com.accenture.mocktibco.model.ServiceDto;
-import com.fasterxml.jackson.core.type.TypeReference;
+import com.accenture.mocktibco.repository.BillingHistoryRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -17,7 +17,7 @@ import org.springframework.web.client.HttpServerErrorException;
 
 import java.io.File;
 import java.util.List;
-import java.util.stream.Collectors;
+import java.util.Optional;
 
 @RestController
 @RequestMapping(value = "/siebel")
@@ -25,6 +25,8 @@ import java.util.stream.Collectors;
 public class SiebelMockController {
 
     private final ObjectMapper objectMapper;
+
+    private final BillingHistoryRepository repository;
 
     @GetMapping(value = "/customer-account")
     public Object getCustomerProfile(@RequestParam String idValue) throws Exception {
@@ -42,21 +44,16 @@ public class SiebelMockController {
 
 
     @GetMapping(value = "/billing-details", produces = {MediaType.APPLICATION_JSON_VALUE})
-    public Object getBillingProfile(@RequestParam Integer billingAccountNo) throws Exception {
+    public Object getBillingProfile(@RequestParam String billingAccountNo) throws Exception {
 
         // simulate slow function - comment if necessary
 //        Thread.sleep(TimeUnit.MINUTES.toMillis(15));
 
-
-        List<BillingDto> response = objectMapper.readValue(new File("billing-account-response.json"), new TypeReference<>() {
-        });
-
-        List<BillingDto> result = response.stream().filter(billingRecord -> billingRecord.getBillingAccountNo().equals(billingAccountNo)).collect(Collectors.toList());
-
+        Optional<List<BillingDto>> result = repository.findByBillingAccountNo(billingAccountNo);
         if (result.isEmpty())
             throw new HttpClientErrorException(HttpStatus.BAD_REQUEST, "billingAccountNo not found");
 
-        return result;
+        return result.get();
     }
 
 
