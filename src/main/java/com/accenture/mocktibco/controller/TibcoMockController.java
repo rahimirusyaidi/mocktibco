@@ -76,7 +76,8 @@ public class TibcoMockController {
     public void updateBillingAmount(@RequestParam String billNo, String billingAccountNo, Double amountPaid) throws Exception {
         Optional<BillingDto> result = billingHistoryRepository.findByBillNoAndBillingAccountNo(billNo, billingAccountNo);
         result.ifPresent(billingDto -> {
-            billingDto.setOutstandingAmount(amountPaid);
+            Double newAmount = billingDto.getOutstandingAmount() - amountPaid;
+            billingDto.setOutstandingAmount(newAmount);
             billingHistoryRepository.save(billingDto);
         });
     }
